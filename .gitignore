@@ -1,0 +1,41 @@
+.DS_Store
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# use glob syntax.
+syntax: glob
+*.ser
+*.class
+*~
+*.bak
+*.off
+*.old
+.DS_Store
+
+# building
+target
+build
+null
+tmp*
+dist
+test-output
+
+# other scm
+.svn
+.CVS
+.hg*
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
