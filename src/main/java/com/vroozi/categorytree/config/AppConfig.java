@@ -16,12 +16,12 @@ import com.vroozi.categorytree.utils.RestServiceUrl;
 @ComponentScan(basePackages = "com.vroozi.categorytree")
 public class AppConfig {
 
+    @Value("${neo4j.db.path}")
+    public String categoryTreeDbPath;
+
     @Value("${liveCatalogIds}")
     public String liveCatalogIds;
     
-    @Value("${matGroupsByCatalogId}")
-	public String matGroupsByCatalogId;
-
     @Value("${matGroupsByCatalogIds}")
 	public String matGroupsByCatalogIds;
 

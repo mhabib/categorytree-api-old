@@ -25,6 +25,10 @@ public class RestServiceUrl {
 		this.appConfig = appConfig;
 	}
 
+	public String getCategoryTreeDbPath() {
+        return appConfig.categoryTreeDbPath;
+    }
+
 	public String getLiveCatalogIdsPath() {
         return appConfig.liveCatalogIds;
     }

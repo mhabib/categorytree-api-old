@@ -4,10 +4,15 @@
 package com.vroozi.categorytree.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import org.mortbay.jetty.servlet.HashSessionIdManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.conversion.EndResult;
 import org.springframework.data.neo4j.template.Neo4jOperations;
@@ -15,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vroozi.categorytree.model.Category;
+import com.vroozi.categorytree.model.CategoryNode;
 import com.vroozi.categorytree.model.ContentView;
 import com.vroozi.categorytree.model.ContentViewGroup;
 import com.vroozi.categorytree.processing.CategoryTreeProcess;
@@ -113,6 +119,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	}
 
 	@Override
+	@Transactional
 	public void addContentViewToGroups(String contentViewId, List<String> groupIds) {
 		ContentView contentView = cvRepository.findByContentViewId(contentViewId);
 		for (String groupId : groupIds) {
@@ -123,6 +130,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	}
 
 	@Override
+	@Transactional
 	public void removeContentViewFromGroups(String contentViewId,
 			List<String> groupIds) {
 		ContentView contentView = cvRepository.findByContentViewId(contentViewId);
@@ -134,6 +142,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	}
 
 	@Override
+	@Transactional
 	public void addCatalogToConentViews(String catalogId,
 			List<String> contentViewIds) {
 
@@ -149,6 +158,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	}
 
 	@Override
+	@Transactional
 	public void removeCatalogFromConentViews(String catalogId,
 			List<String> contentViewIds) {
 		
@@ -206,6 +216,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	}
 	
 	@Override
+	@Transactional
 	public void addCatalog(String unitId, List<String> catalogIds, Map<String, Integer> matGroups) {
 		List<String> contentViewIds = catalogService.getProfilesByCatalogIds(unitId, catalogIds); 
 		EndResult<Category> categories = categoryRepository.findAllByPropertyValue("unitId", unitId);
@@ -226,6 +237,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 //	}
 	
 	@Override
+	@Transactional
 	public void deleteCatalog(String unitId, String catalogId, Map<String, Integer> oldMatGroups) {
 		EndResult<ContentView> contentViews = cvRepository.findAllByPropertyValue("unitId", unitId);
 		EndResult<Category> categories = categoryRepository.findAllByPropertyValue("unitId", unitId);
@@ -240,6 +252,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	}
 
 	@Override
+	@Transactional
 	public void uploadCategories(String unitId, String baseFile) {
 		categoryRepository.deleteAll();
 		categoryTreeProcess.processCategories(unitId, baseFile);
@@ -248,14 +261,53 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 
 	public void updateCategoriesPath(String unitId) {
 		List<String> catalogIds = catalogService.getLiveCatalogIds(unitId);
-		Map<String, Integer> catalogMatGroups = catalogService.getMatGroupsByCatalogIds(catalogIds);
-		addCatalog(unitId, catalogIds, catalogMatGroups);
+		if(catalogIds!=null && catalogIds.size()>0) {
+			Map<String, Integer> catalogMatGroups = catalogService.getMatGroupsByCatalogIds(catalogIds);
+			addCatalog(unitId, catalogIds, catalogMatGroups);
+		}
 	}
 
 	@Override
-	public Category getCategoryTree(String unitId, String contentViewGroupToken) {
-		categoryRepository.getCategories("");
-		return null;
+	@Transactional
+	public Collection<CategoryNode> getCategoryTree(String unitId, String contentViewGroupToken) {
+		List<Category> categories = categoryRepository.getCategories(contentViewGroupToken);
+		Map<Long, CategoryNode> rootNodes = new HashMap<Long, CategoryNode>();
+		for (Category category : categories) {
+			CategoryNode node = populateCategoryNode(category);
+			if(category.getParent()==null) {
+				rootNodes.put(node.getId(), node);
+			} else {
+				CategoryNode parent = rootNodes.get(category.getParent().getId());
+				if(parent == null) {
+					parent = populateCategoryNode(category.getParent());
+				}
+				parent.getChildNodes().add(node);
+				if(category.getParent().getParent() == null) {
+					rootNodes.put(parent.getId(), parent);
+				} else {
+					CategoryNode grandParent = rootNodes.get(category.getParent().getParent().getId());
+					if(grandParent == null) {
+						grandParent = populateCategoryNode(category.getParent());
+					}
+					grandParent.getChildNodes().add(parent);
+					rootNodes.put(grandParent.getId(), grandParent);
+				}
+			}
+		}
+		
+		return rootNodes.values();
+	}
+
+	public CategoryNode populateCategoryNode(Category category) {
+		CategoryNode node = new CategoryNode();
+		node.setCatalogCategoryCode(category.getCatalogCategoryCode());
+		node.setId(category.getId());
+		node.setCategoryId(category.getCategoryId());
+		node.setNodeId(category.getRow());
+		node.setCatalogCategoryCode(category.getCatalogCategoryCode());
+		node.setCompanyCategoryCode(category.getCompanyCategoryCode());
+		node.setNodeTitle(category.getCompanyLabel());;
+		return node;
 	}
 
 	private boolean mapCategory(Category category, Map<String, Integer> matGroups) {

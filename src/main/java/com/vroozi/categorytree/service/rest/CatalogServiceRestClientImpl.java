@@ -34,7 +34,7 @@ public class CatalogServiceRestClientImpl implements CatalogService {
         String[] catalogIdsString = new String[0];
         List<String> catalogIdList = new ArrayList<String>();
         try {
-            catalogIdsString =  new RestTemplate().getForObject(restServiceUrl.getLiveCatalogIdsPath(), String[].class, unitId,true);
+            catalogIdsString =  new RestTemplate().getForObject(restServiceUrl.getLiveCatalogIdsPath(), String[].class, unitId, false);
         } catch (Exception e) {
             LOGGER.error("Error occurred while fetching profile group based on group token");
             return null;
@@ -58,7 +58,7 @@ public class CatalogServiceRestClientImpl implements CatalogService {
 			Map<String, Integer> matGroups =  new RestTemplate().getForObject(restServiceUrl.getMatGroupsByCatalogIdsPath(), Map.class, catalogIds);
 			return matGroups;
         } catch (Exception e) {
-            LOGGER.error("Error occurred while fetching catalog mat groups.");
+            LOGGER.error("Error occurred while fetching catalog mat groups.", e);
             return null;
         }
 	}

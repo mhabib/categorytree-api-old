@@ -56,7 +56,7 @@ public class ContentView {
 	public CategoryMapping addCategoryMapping(Category category) {
 		CategoryMapping categoryMapping = null;
         for (CategoryMapping mapping : categoryMappings) {
-        	if(mapping.getCategory().getCategoryId().equals(category.getCategoryId())) {
+        	if(mapping.getCategory().equals(category)) {
         		categoryMapping = mapping;
         		categoryMapping.setCount(categoryMapping.getCount()+1);
         	}

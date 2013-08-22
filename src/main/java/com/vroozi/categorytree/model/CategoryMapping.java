@@ -18,6 +18,9 @@ public class CategoryMapping {
 	@StartNode private ContentView contentView;
 	@EndNode private Category category;
 	private Integer count;
+
+	public CategoryMapping() {
+	}
 	
 	public CategoryMapping(ContentView contentView, Category category,
 			Integer count) {

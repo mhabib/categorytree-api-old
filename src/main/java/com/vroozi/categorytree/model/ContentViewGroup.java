@@ -23,6 +23,7 @@ public class ContentViewGroup {
 	String name;
 	@Indexed
 	String unitId;
+	@Indexed
 	String token;
 	Boolean active;
 	

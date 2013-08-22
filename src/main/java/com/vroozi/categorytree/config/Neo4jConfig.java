@@ -1,10 +1,15 @@
 package com.vroozi.categorytree.config;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.server.WrappingNeoServerBootstrapper;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
@@ -17,20 +22,30 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableNeo4jRepositories("com.vroozi.categorytree.repository")
 @EnableTransactionManagement
 public class Neo4jConfig extends Neo4jConfiguration {
-
-    @Value("${neo4j.db.path}")
-    public String categoryTreeDbPath;
-
+	
+	private final Logger LOGGER = LoggerFactory.getLogger(Neo4jConfig.class);
+	
     @Bean
     public GraphDatabaseService graphDatabaseService() {
+    	Properties properties = new Properties();
+    	InputStream is = Neo4jConfig.class.getResourceAsStream("/categorytree.properties"); 
+    	try {
+			properties.load(is);
+			
+	    	String categoryTreeDbPath = properties.getProperty("neo4j.db.path");
     		GraphDatabaseService graphDbService = new GraphDatabaseFactory().
-			    newEmbeddedDatabaseBuilder( "D:/categoryDb" ).
+			    newEmbeddedDatabaseBuilder( categoryTreeDbPath ).
 //			    setConfig( GraphDatabaseSettings.node_keys_indexable, "id, cvGroupId, cviewId" ).
 //			    setConfig( GraphDatabaseSettings.relationship_keys_indexable, "relProp1,relProp2" ).
 //			    setConfig( GraphDatabaseSettings.node_auto_indexing, "true" ).
 //			    setConfig( GraphDatabaseSettings.relationship_auto_indexing, "true" ).
 			    newGraphDatabase();
-    	return graphDbService;
+    		return graphDbService;
+		} catch (IOException e) {
+			LOGGER.error("Failed to load properties", e);
+		}
+    	
+    	return null;
     }
     
     @Override
