@@ -74,21 +74,23 @@ public class CategoryTreeProcess {
 		category.setCompanyLabel(columns[4]);
 		
 		if(columns[5] != null && columns[5].length() > 0){
-			Category parent = categoryMap.get(columns[5]);
-			parent.getChilds().add(category);
-			category.setParent(parent);
+//			Category parent = categoryMap.get(columns[5]);
+//			parent.getChilds().add(category);
+//			category.setParent(parent);
 		}
 
 		if(columns[6] != null && columns[6].length() > 0){
 			Category parent = categoryMap.get(columns[6]);
-			parent.getChilds().add(category);
-			category.setParent(parent);
+			if(parent != null) {
+				category.setParent(parent);
+			}
 		}
 			
 		if(columns[7] != null && columns[7].length() > 0){
 			Category parent = categoryMap.get(columns[7]);
-			parent.getChilds().add(category);
-			category.setParent(parent);
+			if(parent != null) {
+				category.setParent(parent);
+			}
 		}
 
 		category.setStartRange(columns[8]);

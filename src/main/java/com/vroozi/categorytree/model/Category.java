@@ -1,7 +1,8 @@
 package com.vroozi.categorytree.model;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
@@ -11,7 +12,6 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
 public class Category {
 	
 	@GraphId Long id;
-	@Indexed(unique = true)
 	private String categoryId;
 	@Indexed
 	private String unitId;
@@ -24,7 +24,6 @@ public class Category {
     private String companyLabel;
     private String supplierId;
     private Category parent;    
-    private List<Category> childs = new ArrayList<Category>();
 
 	public Long getId() {
 		return id;
@@ -92,11 +91,22 @@ public class Category {
 	public void setParent(Category parent) {
 		this.parent = parent;
 	}
-	public List<Category> getChilds() {
-		return childs;
-	}
-	public void setChilds(List<Category> childs) {
-		this.childs = childs;
+
+	@Override
+	public boolean equals(Object obj) {
+		if(this == obj) {
+			return true;
+		}
+			
+		if(obj instanceof Category) {
+			Category category2 = (Category) obj;
+			return unitId==null ? category2.getUnitId() == null: unitId.equals(category2.getUnitId()) 
+					&& catalogCategoryCode==null ? category2.getCatalogCategoryCode() == null: catalogCategoryCode.equals(category2.getCatalogCategoryCode())
+					&& companyCategoryCode==null ? category2.getCompanyCategoryCode() == null: companyCategoryCode.equals(category2.getCompanyCategoryCode())
+					&& supplierId==null ? category2.getSupplierId() == null: supplierId.equals(category2.getSupplierId());
+		}
+		
+		return false;
 	}
 	
 }

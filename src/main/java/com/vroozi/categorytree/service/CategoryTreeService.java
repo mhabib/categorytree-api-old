@@ -3,10 +3,11 @@
  */
 package com.vroozi.categorytree.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.vroozi.categorytree.model.Category;
+import com.vroozi.categorytree.model.CategoryNode;
 
 /**
  * @author Mamoon Habib
@@ -23,7 +24,7 @@ public interface CategoryTreeService {
 	void addCatalog(String unitId, List<String> catalogIds, Map<String, Integer> matGroups);
 	void deleteCatalog(String unitId, String catalogId, Map<String, Integer> oldMatGroups);
 	void uploadCategories(String unitId, String baseFile);
-	Category getCategoryTree(String unitId, String contentViewGroupToken);
+	Collection<CategoryNode> getCategoryTree(String unitId, String contentViewGroupToken);
 	void addContentViewToGroups(String cviewId, List<String> cvgoupIds);
 	void removeContentViewFromGroups(String contentViewId, List<String> cvgoupIds);
 	void addCatalogToConentViews(String catalogId, List<String> contentViewIds);
