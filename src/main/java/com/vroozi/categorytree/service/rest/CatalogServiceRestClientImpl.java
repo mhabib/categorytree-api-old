@@ -64,16 +64,17 @@ public class CatalogServiceRestClientImpl implements CatalogService {
 	}
 
 	@Override
-	public List<String> getProfilesByCatalogIds(String unitId, List<String> catalogIds) {
-        try {
+	public List<String> getContentViewIdsByCatalogIds(String unitId,
+			List<String> catalogIds) {
+		try {
         	String catalogIdStr = StringUtils.join(catalogIds, ',');
-        	String[] profilesArray =  new RestTemplate().getForObject(restServiceUrl.getProfilesByCatalogIdsURI(), String[].class, unitId, catalogIdStr);
-        	List<String> profileIds = Arrays.asList(profilesArray);
-        	return profileIds;
+        	String[] cviewArray =  new RestTemplate().getForObject(restServiceUrl.getProfilesByCatalogIdsURI(), String[].class, unitId, catalogIdStr);
+        	List<String> contentViewIds = Arrays.asList(cviewArray);
+        	return contentViewIds;
         } catch(RestClientException rse) {
-        	LOGGER.error("Error retrieving profiles!", rse);
+        	LOGGER.error("Error retrieving content view ids!", rse);
         } catch(Exception exp) {
-        	LOGGER.error("Error retrieving profiles!", exp);
+        	LOGGER.error("Error retrieving content view ids!", exp);
         }
         return null;
 	}

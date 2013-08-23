@@ -6,13 +6,10 @@ package com.vroozi.categorytree.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import org.mortbay.jetty.servlet.HashSessionIdManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.conversion.EndResult;
 import org.springframework.data.neo4j.template.Neo4jOperations;
@@ -218,7 +215,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	@Override
 	@Transactional
 	public void addCatalog(String unitId, List<String> catalogIds, Map<String, Integer> matGroups) {
-		List<String> contentViewIds = catalogService.getProfilesByCatalogIds(unitId, catalogIds); 
+		List<String> contentViewIds = catalogService.getContentViewIdsByCatalogIds(unitId, catalogIds); 
 		EndResult<Category> categories = categoryRepository.findAllByPropertyValue("unitId", unitId);
 		for (Category category : categories) {
 			if(mapCategory(category, matGroups)) {
@@ -239,7 +236,16 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	@Override
 	@Transactional
 	public void deleteCatalog(String unitId, String catalogId, Map<String, Integer> oldMatGroups) {
-		EndResult<ContentView> contentViews = cvRepository.findAllByPropertyValue("unitId", unitId);
+		List<String> catalogIds = new ArrayList<String>(1);
+		catalogIds.add(catalogId);
+		List<String> contentViewIds = catalogService.getContentViewIdsByCatalogIds(unitId, catalogIds);
+		
+		List<ContentView> contentViews = new ArrayList<ContentView>(contentViewIds.size());
+		for (String contentViewId : contentViewIds) {
+			ContentView contentView = cvRepository.findByContentViewId(contentViewId);
+			contentViews.add(contentView);
+		}
+		
 		EndResult<Category> categories = categoryRepository.findAllByPropertyValue("unitId", unitId);
 		for (Category category : categories) {
 			if(mapCategory(category, oldMatGroups)) {

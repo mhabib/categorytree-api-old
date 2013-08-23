@@ -3,7 +3,8 @@
  */
 package com.vroozi.categorytree.model;
 
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
@@ -23,7 +24,7 @@ public class ContentView {
 	String name;
 	Boolean active;
 	@RelatedToVia(type = "MAPS_WITH")
-	Collection<CategoryMapping> categoryMappings;
+	Set<CategoryMapping> categoryMappings = new HashSet<CategoryMapping>();
 	
 	public Long getId() {
 		return id;
@@ -49,8 +50,11 @@ public class ContentView {
 	public void setActive(Boolean active) {
 		this.active = active;
 	}
-	public Collection<CategoryMapping> getCategoryMappings() {
+	public Set<CategoryMapping> getCategoryMappings() {
 		return categoryMappings;
+	}
+	public void setCategoryMappings(Set<CategoryMapping> categoryMappings) {
+		this.categoryMappings = categoryMappings;
 	}
 	
 	public CategoryMapping addCategoryMapping(Category category) {
@@ -72,7 +76,7 @@ public class ContentView {
 	public CategoryMapping removeCategoryMapping(Category category) {
 		CategoryMapping categoryMapping = null;
         for (CategoryMapping mapping : categoryMappings) {
-        	if(mapping.getCategory().getCategoryId().equals(category.getCategoryId()) && mapping.getCount()>0) {
+        	if(mapping.getCategory().equals(category) && mapping.getCount()>0) {
         		mapping.setCount(mapping.getCount()-1);
         		categoryMapping = mapping;
         	}

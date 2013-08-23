@@ -14,5 +14,5 @@ public interface CatalogService {
 	
 	List<String> getLiveCatalogIds(String unitId);
 	Map<String, Integer> getMatGroupsByCatalogIds(List<String> catalogId);
-	List<String> getProfilesByCatalogIds(String unitId, List<String> catalogIds);
+	List<String> getContentViewIdsByCatalogIds(String unitId, List<String> catalogIds);
 }
