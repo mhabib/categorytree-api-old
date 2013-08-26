@@ -6,10 +6,12 @@ package com.vroozi.categorytree.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedToVia;
+import org.springframework.data.neo4j.template.Neo4jOperations;
 
 /**
  * @author Mamoon Habib
@@ -57,28 +59,32 @@ public class ContentView {
 		this.categoryMappings = categoryMappings;
 	}
 	
-	public CategoryMapping addCategoryMapping(Category category) {
+	public CategoryMapping addCategoryMapping(Neo4jOperations neoTemplate, Category category) {
 		CategoryMapping categoryMapping = null;
+		boolean newMapping = true;
         for (CategoryMapping mapping : categoryMappings) {
         	if(mapping.getCategory().equals(category)) {
+        		newMapping = false;
         		categoryMapping = mapping;
         		categoryMapping.setCount(categoryMapping.getCount()+1);
+        		neoTemplate.save(mapping);
         	}
 		}
-        if(categoryMapping == null) {
-        	categoryMapping = new CategoryMapping(this, category, 1);
-        	this.categoryMappings.add(categoryMapping);
+        if(newMapping) {
+        	CategoryMapping mapping = new CategoryMapping(this, category, 1);
+        	categoryMappings.add(mapping);
+        	
         }
-        
         return categoryMapping;
     }
 
-	public CategoryMapping removeCategoryMapping(Category category) {
+	public CategoryMapping removeCategoryMapping(Neo4jOperations neoTemplate, Category category) {
 		CategoryMapping categoryMapping = null;
         for (CategoryMapping mapping : categoryMappings) {
         	if(mapping.getCategory().equals(category) && mapping.getCount()>0) {
         		mapping.setCount(mapping.getCount()-1);
         		categoryMapping = mapping;
+        		neoTemplate.save(mapping);
         	}
 		}
         return categoryMapping;
