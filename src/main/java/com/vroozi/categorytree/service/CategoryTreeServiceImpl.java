@@ -231,11 +231,6 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 		}
 	}
 
-//	public void updateCatalog(String unitId, String catalogId, Map<String, Integer> oldMatGroups, Map<String, Integer> matGroups, List<String> contentViewIds) {
-//		deleteCatalog(unitId, oldContentViewIds, oldMatGroups);
-//		addCatalog(unitId, contentViewIds, matGroups);
-//	}
-	
 	@Override
 	@Transactional
 	public void deleteCatalog(String unitId, String catalogId, Map<String, Integer> oldMatGroups) {
