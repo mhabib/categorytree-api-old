@@ -55,7 +55,8 @@ public class CatalogServiceRestClientImpl implements CatalogService {
 	@Override
 	public Map<String, Integer> getMatGroupsByCatalogIds(List<String> catalogIds) {
 		try {
-			Map<String, Integer> matGroups =  new RestTemplate().getForObject(restServiceUrl.getMatGroupsByCatalogIdsPath(), Map.class, catalogIds);
+			String catalogIdStr = StringUtils.join(catalogIds, ',');
+			Map<String, Integer> matGroups =  new RestTemplate().getForObject(restServiceUrl.getMatGroupsByCatalogIdsPath(), Map.class, catalogIdStr);
 			return matGroups;
         } catch (Exception e) {
             LOGGER.error("Error occurred while fetching catalog mat groups.", e);

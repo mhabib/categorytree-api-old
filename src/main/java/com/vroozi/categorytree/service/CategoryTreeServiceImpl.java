@@ -140,7 +140,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 
 	@Override
 	@Transactional
-	public void addCatalogToConentViews(String catalogId,
+	public void addCatalogToConentViews(String unitId, String catalogId,
 			List<String> contentViewIds) {
 
 		List<String> catalogIds = new ArrayList<String>(1);
@@ -149,14 +149,14 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 		if(matGroups!=null && matGroups.size()>0) {
 			for (String contentViewId : contentViewIds) {
 				ContentView contentView = cvRepository.findByContentViewId(contentViewId);
-				linkContentViewCategories(contentView, matGroups);
+				linkContentViewCategories(unitId, contentView, matGroups);
 			}
 		}
 	}
 
 	@Override
 	@Transactional
-	public void removeCatalogFromConentViews(String catalogId,
+	public void removeCatalogFromConentViews(String unitId, String catalogId,
 			List<String> contentViewIds) {
 		
 		List<String> catalogIds = new ArrayList<String>(1);
@@ -165,14 +165,14 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 		if(matGroups!=null && matGroups.size()>0) {
 			for (String contentViewId : contentViewIds) {
 				ContentView contentView = cvRepository.findByContentViewId(contentViewId);
-				unlinkContentViewCategories(contentView, matGroups);
+				unlinkContentViewCategories(unitId, contentView, matGroups);
 			}
 		}
 	}
 
 	@Override
 	@Transactional
-	public void addContentView(String contentViewGroupId, String contentViewId,
+	public void addContentView(String unitId, String contentViewGroupId, String contentViewId,
 			String contenViewName, List<String> catalogIds) {
 		ContentView contentView = cvRepository.findByContentViewId(contentViewId);
 		if(contentView==null) {
@@ -188,25 +188,25 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 		
 		Map<String, Integer> matGroups = catalogService.getMatGroupsByCatalogIds(catalogIds);
 		if(matGroups!=null && matGroups.size()>0) {
-			linkContentViewCategories(contentView, matGroups);
+			linkContentViewCategories(unitId, contentView, matGroups);
 		}
 	}
 
-	private void linkContentViewCategories(ContentView contentView, Map<String, Integer> matGroups) {
-		EndResult<Category> categories = categoryRepository.findAllByPropertyValue("unitId", "");
+	private void linkContentViewCategories(String unitId, ContentView contentView, Map<String, Integer> matGroups) {
+		EndResult<Category> categories = categoryRepository.findAllByPropertyValue("unitId", unitId);
 		for (Category category : categories) {
 			if(mapCategory(category, matGroups)) {
-				contentView.addCategoryMapping(category);
+				contentView.addCategoryMapping(neoTemplate, category);
 			}
 		}
 		contentView = cvRepository.save(contentView);
 	}
 
-	private void unlinkContentViewCategories(ContentView contentView, Map<String, Integer> matGroups) {
-		EndResult<Category> categories = categoryRepository.findAllByPropertyValue("unitId", "");
+	private void unlinkContentViewCategories(String unitId, ContentView contentView, Map<String, Integer> matGroups) {
+		EndResult<Category> categories = categoryRepository.findAllByPropertyValue("unitId", unitId);
 		for (Category category : categories) {
 			if(mapCategory(category, matGroups)) {
-				contentView.removeCategoryMapping(category);
+				contentView.removeCategoryMapping(neoTemplate, category);
 			}
 		}
 		contentView = cvRepository.save(contentView);
@@ -221,7 +221,8 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 			if(mapCategory(category, matGroups)) {
 				for (String contentViewId : contentViewIds) {
 					ContentView contentView = cvRepository.findByContentViewId(contentViewId);
-					contentView.addCategoryMapping(category);
+					contentView.addCategoryMapping(neoTemplate, category);
+					contentView.setName(contentView.getName()+"+++++add");
 					cvRepository.save(contentView);
 				}
 			}
@@ -250,7 +251,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 		for (Category category : categories) {
 			if(mapCategory(category, oldMatGroups)) {
 				for (ContentView contentView : contentViews) {
-					contentView.removeCategoryMapping(category);
+					contentView.removeCategoryMapping(neoTemplate, category);
 					cvRepository.save(contentView);
 				}
 			}
@@ -283,20 +284,22 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 			if(category.getParent()==null) {
 				rootNodes.put(node.getId(), node);
 			} else {
-				CategoryNode parent = rootNodes.get(category.getParent().getId());
-				if(parent == null) {
-					parent = populateCategoryNode(category.getParent());
+				Category parent = neoTemplate.fetch(category.getParent());
+				CategoryNode parentNode = rootNodes.get(parent.getId());
+				if(parentNode == null) {
+					parentNode = populateCategoryNode(parent);
 				}
-				parent.getChildNodes().add(node);
-				if(category.getParent().getParent() == null) {
-					rootNodes.put(parent.getId(), parent);
+				parentNode.getChildNodes().add(node);
+				if(parent.getParent() == null) {
+					rootNodes.put(parentNode.getId(), parentNode);
 				} else {
-					CategoryNode grandParent = rootNodes.get(category.getParent().getParent().getId());
-					if(grandParent == null) {
-						grandParent = populateCategoryNode(category.getParent());
+					Category grandParent = neoTemplate.fetch(parent.getParent());
+					CategoryNode grandParentNode = rootNodes.get(grandParent.getId());
+					if(grandParentNode == null) {
+						grandParentNode = populateCategoryNode(grandParent);
 					}
-					grandParent.getChildNodes().add(parent);
-					rootNodes.put(grandParent.getId(), grandParent);
+					grandParentNode.getChildNodes().add(parentNode);
+					rootNodes.put(grandParentNode.getId(), grandParentNode);
 				}
 			}
 		}

@@ -100,10 +100,10 @@ public class Category {
 			
 		if(obj instanceof Category) {
 			Category category2 = (Category) obj;
-			return unitId==null ? category2.getUnitId() == null: unitId.equals(category2.getUnitId()) 
-					&& catalogCategoryCode==null ? category2.getCatalogCategoryCode() == null: catalogCategoryCode.equals(category2.getCatalogCategoryCode())
-					&& companyCategoryCode==null ? category2.getCompanyCategoryCode() == null: companyCategoryCode.equals(category2.getCompanyCategoryCode())
-					&& supplierId==null ? category2.getSupplierId() == null: supplierId.equals(category2.getSupplierId());
+			return ((unitId==null ? category2.getUnitId() == null: unitId.equals(category2.getUnitId()))
+					&& (catalogCategoryCode==null ? category2.getCatalogCategoryCode() == null: catalogCategoryCode.equals(category2.getCatalogCategoryCode()))
+					&& (companyCategoryCode==null ? category2.getCompanyCategoryCode() == null: companyCategoryCode.equals(category2.getCompanyCategoryCode()))
+					&& (supplierId==null ? category2.getSupplierId() == null: supplierId.equals(category2.getSupplierId())));
 		}
 		
 		return false;

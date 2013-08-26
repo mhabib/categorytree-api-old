@@ -62,12 +62,13 @@ public class CategoryTreeController {
 		categoryTreeService.updateContentViews(contentViewIdList, active);
 	}
 	
-	@RequestMapping(value = "/category-tree/cview/cvgroupid/{cvgroupid}/cviewid/{cviewid}/cvname/{cvname}", method = RequestMethod.POST)
-	public void addContentView(@PathVariable("cvgroupid") String contentViewGroupId, 
+	@RequestMapping(value = "/category-tree/cview/company/{unitid}/cvgroupid/{cvgroupid}/cviewid/{cviewid}/cvname/{cvname}", method = RequestMethod.POST)
+	public void addContentView(@PathVariable("unitid") String unitId,
+			@PathVariable("cvgroupid") String contentViewGroupId, 
 			@PathVariable("cviewid") String contentViewId,
 			@PathVariable("cvname") String contenViewName, @RequestBody List<String> catalogIds) {
 		
-		categoryTreeService.addContentView(contentViewGroupId, contentViewId, contenViewName, catalogIds);
+		categoryTreeService.addContentView(unitId, contentViewGroupId, contentViewId, contenViewName, catalogIds);
 	}
 
 	@RequestMapping(value = "/category-tree/cview/cviewids/{cviewids}", method = RequestMethod.DELETE)
@@ -90,18 +91,18 @@ public class CategoryTreeController {
 		categoryTreeService.removeContentViewFromGroups(cviewId, cvgoupList);
 	}
 
-	@RequestMapping(value = "/category-tree/cview/link/cview/catalogid/{catalogid}/cviewids/{cviewids}", method = RequestMethod.PUT)
-	public void addCatalogToConentViews(@PathVariable("catalogid") String catalogId, @PathVariable("cviewids") String cviewids) {
+	@RequestMapping(value = "/category-tree/cview/link/company/{unitid}/catalogid/{catalogid}/cviewids/{cviewids}", method = RequestMethod.PUT)
+	public void addCatalogToConentViews(@PathVariable("unitid") String unitId, @PathVariable("catalogid") String catalogId, @PathVariable("cviewids") String cviewids) {
 		
 		List<String> cvgoupList = StringUtils.toList(cviewids);
-		categoryTreeService.addCatalogToConentViews(catalogId, cvgoupList);
+		categoryTreeService.addCatalogToConentViews(unitId, catalogId, cvgoupList);
 	}
 
-	@RequestMapping(value = "/category-tree/cview/ulink/cview/catalogid/{catalogid}/cviewids/{cvgroupids}", method = RequestMethod.PUT)
-	public void removeCatalogFromConentViews(@PathVariable("catalogid") String catalogId, @PathVariable("cviewids") String cviewids) {
+	@RequestMapping(value = "/category-tree/cview/ulink/company/{unitid}/catalogid/{catalogid}/cviewids/{cviewids}", method = RequestMethod.PUT)
+	public void removeCatalogFromConentViews(@PathVariable("unitid") String unitId, @PathVariable("catalogid") String catalogId, @PathVariable("cviewids") String cviewids) {
 		
 		List<String> cvgoupList = StringUtils.toList(cviewids);
-		categoryTreeService.removeCatalogFromConentViews(catalogId, cvgoupList);
+		categoryTreeService.removeCatalogFromConentViews(unitId, catalogId, cvgoupList);
 	}
 
 	@RequestMapping(value = "/category-tree/catalog/company/{unitid}/catalogids/{catalogids}", method = RequestMethod.POST)

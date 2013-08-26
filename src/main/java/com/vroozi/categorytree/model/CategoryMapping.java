@@ -4,6 +4,7 @@
 package com.vroozi.categorytree.model;
 
 import org.springframework.data.neo4j.annotation.EndNode;
+import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.RelationshipEntity;
 import org.springframework.data.neo4j.annotation.StartNode;
@@ -16,7 +17,7 @@ import org.springframework.data.neo4j.annotation.StartNode;
 public class CategoryMapping {
 	@GraphId private Long id;
 	@StartNode private ContentView contentView;
-	@EndNode private Category category;
+	@EndNode @Fetch private Category category;
 	private Integer count;
 
 	public CategoryMapping() {
