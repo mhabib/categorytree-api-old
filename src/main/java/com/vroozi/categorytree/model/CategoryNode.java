@@ -20,7 +20,7 @@ public class CategoryNode {
 	private String catalogCategoryCode;
     private String companyCategoryCode;
     private String nodeTitle;
-    private Set<CategoryNode> childNodes = new HashSet<CategoryNode>();
+    private HashSet<CategoryNode> childNodes = new HashSet<CategoryNode>();
     
 	public Long getId() {
 		return id;
@@ -58,12 +58,31 @@ public class CategoryNode {
 	public void setNodeTitle(String nodeTitle) {
 		this.nodeTitle = nodeTitle;
 	}
-	public Set<CategoryNode> getChildNodes() {
+	public HashSet<CategoryNode> getChildNodes() {
 		return childNodes;
 	}
-	public void setChildNodes(Set<CategoryNode> childNodes) {
+	public void setChildNodes(HashSet<CategoryNode> childNodes) {
 		this.childNodes = childNodes;
 	}
+	
+	public CategoryNode addChild(CategoryNode child) {
+		CategoryNode childNode = getChild(child);
+		if(childNode != null) {
+			return childNode;
+		}
+		childNodes.add(child);
+		return child;
+	}
+	
+	public CategoryNode getChild(CategoryNode child) {
+		for (CategoryNode categoryNode : childNodes) {
+			if(categoryNode.equals(child)) {
+				return categoryNode;
+			}
+		}
+		return null;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if(this == obj) {
@@ -78,6 +97,10 @@ public class CategoryNode {
 		}
 		
 		return false;
+	}
+	@Override
+	public int hashCode() {
+		return id.hashCode();
 	}
 
 }

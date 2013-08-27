@@ -278,31 +278,26 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 		List<Category> categories = categoryRepository.getCategories(contentViewGroupToken);
 		Map<Long, CategoryNode> rootNodes = new HashMap<Long, CategoryNode>();
 		for (Category category : categories) {
-			CategoryNode node = populateCategoryNode(category);
-			if(category.getParent()==null) {
-				rootNodes.put(node.getId(), node);
-			} else {
-				Category parent = neoTemplate.fetch(category.getParent());
-				CategoryNode parentNode = rootNodes.get(parent.getId());
-				if(parentNode == null) {
-					parentNode = populateCategoryNode(parent);
-				}
-				parentNode.getChildNodes().add(node);
-				if(parent.getParent() == null) {
-					rootNodes.put(parentNode.getId(), parentNode);
-				} else {
-					Category grandParent = neoTemplate.fetch(parent.getParent());
-					CategoryNode grandParentNode = rootNodes.get(grandParent.getId());
-					if(grandParentNode == null) {
-						grandParentNode = populateCategoryNode(grandParent);
-					}
-					grandParentNode.getChildNodes().add(parentNode);
-					rootNodes.put(grandParentNode.getId(), grandParentNode);
-				}
-			}
+			saveNode(rootNodes, category);
 		}
 		
 		return rootNodes.values();
+	}
+
+	private CategoryNode saveNode(Map<Long, CategoryNode> rootNodes, Category category) {
+		if(category.getParent()==null) {
+			CategoryNode node = rootNodes.get(category.getId());
+			if(node==null) {
+				node = populateCategoryNode(category);
+			}
+			rootNodes.put(category.getId(), node);
+			return node;
+		} else {
+			Category parent = neoTemplate.fetch(category.getParent());
+			CategoryNode parentNode = saveNode(rootNodes, parent);
+			CategoryNode categoryNode = populateCategoryNode(category);
+			return parentNode.addChild(categoryNode);
+		}
 	}
 
 	public CategoryNode populateCategoryNode(Category category) {

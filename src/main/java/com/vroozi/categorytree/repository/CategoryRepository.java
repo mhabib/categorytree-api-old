@@ -21,8 +21,8 @@ public interface CategoryRepository extends GraphRepository<Category>, Relations
 	Category findByCompanyCategoryCode(String companyCategoryCode);
 	
 	@Query( "START cvgroup=node:ContentViewGroup(token={token}) " +
-            " MATCH (cvgroup)-->(cview)-->(category) " +
-            " where cvgroup.active = true and cview.active = true " +
+            " MATCH (cvgroup)-->(cview)-[r]->(category) " +
+            " where cvgroup.active = true and cview.active = true and r.count > 0" +
             " return category")
 //	+" order by rating desc, cnt desc" +
 //            " limit 10" )
