@@ -91,10 +91,10 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 		if(contentView==null) {
 			contentView = new ContentView();
 			contentView.setContentViewId(contentViewId);
-			contentView.setName(name);
-			contentView.setActive(active);
-			contentView = cvRepository.save(contentView);
 		}
+		contentView.setName(name);
+		contentView.setActive(active);
+		contentView = cvRepository.save(contentView);
 	}
 	
 	@Override

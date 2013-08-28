@@ -105,7 +105,7 @@ public class CategoryTreeController {
 		categoryTreeService.removeCatalogFromConentViews(unitId, catalogId, cvgoupList);
 	}
 
-	@RequestMapping(value = "/category-tree/catalog/company/{unitid}/catalogids/{catalogids}", method = RequestMethod.POST)
+	@RequestMapping(value = "/category-tree/catalog/company/{unitid}/catalogids/{catalogids}", method = RequestMethod.POST, consumes = "application/json")
 	public void addCatalog(@PathVariable("unitid")String unitId, @PathVariable("catalogids") String catalogIds, @RequestBody Map<String, Integer> catalogMatGroups) {
 		List<String> catalogIdList = StringUtils.toList(catalogIds);
 		categoryTreeService.addCatalog(unitId, catalogIdList, catalogMatGroups);
@@ -118,7 +118,7 @@ public class CategoryTreeController {
 //				contentViewIds);
 //	}
 
-	@RequestMapping(value = "/category-tree/catalog/delete/company/{unitid}/catalogid/{catalogid}", method = RequestMethod.POST)
+	@RequestMapping(value = "/category-tree/catalog/delete/company/{unitid}/catalogid/{catalogid}", method = RequestMethod.POST, consumes = "application/json")
 	public void deleteCatalog(@PathVariable("unitid")String unitId, @PathVariable("catalogid") String catalogId, @RequestBody Map<String, Integer> catalogMatGroups) {
 		
 		categoryTreeService.deleteCatalog(unitId, catalogId, catalogMatGroups);
