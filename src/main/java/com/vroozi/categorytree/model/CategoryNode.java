@@ -83,6 +83,14 @@ public class CategoryNode {
 		return null;
 	}
 	
+	public String getKeyword() {
+		StringBuffer keyword = new StringBuffer(catalogCategoryCode+","+companyCategoryCode);
+		for (CategoryNode categoryNode : childNodes) {
+			keyword.append(";"+categoryNode.getKeyword());
+		}
+		return keyword.toString();
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if(this == obj) {
