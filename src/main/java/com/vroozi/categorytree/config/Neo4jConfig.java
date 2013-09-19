@@ -40,6 +40,7 @@ public class Neo4jConfig extends Neo4jConfiguration {
 //			    setConfig( GraphDatabaseSettings.node_auto_indexing, "true" ).
 //			    setConfig( GraphDatabaseSettings.relationship_auto_indexing, "true" ).
 			    newGraphDatabase();
+    		registerShutdownHook(graphDbService);
     		return graphDbService;
 		} catch (IOException e) {
 			LOGGER.error("Failed to load properties", e);
@@ -54,10 +55,25 @@ public class Neo4jConfig extends Neo4jConfiguration {
         return new JtaTransactionManagerFactoryBean(graphDatabaseService()).getObject();
     }
     
-    @Bean
+    @Bean(destroyMethod="stop")   
     public WrappingNeoServerBootstrapper neo4jWebServer() {
         WrappingNeoServerBootstrapper server = new WrappingNeoServerBootstrapper((GraphDatabaseAPI)graphDatabaseService());
         server.start();
         return server;
+    }
+    
+    private static void registerShutdownHook( final GraphDatabaseService graphDb )
+    {
+        // Registers a shutdown hook for the Neo4j instance so that it
+        // shuts down nicely when the VM exits (even if you "Ctrl-C" the
+        // running application).
+        Runtime.getRuntime().addShutdownHook( new Thread()
+        {
+            @Override
+            public void run()
+            {
+                graphDb.shutdown();
+            }
+        } );
     }
 }
