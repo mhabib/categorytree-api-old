@@ -91,6 +91,13 @@ public class CategoryTreeController {
 		categoryTreeService.removeContentViewFromGroups(cviewId, cvgoupList);
 	}
 
+	@RequestMapping(value = "/category-tree/cview/link/cviewgroup/cvgroupid/{cvgroupid}/cviewids/{cviewids}", method = RequestMethod.PUT)
+	public void addConentViewToGroup(@PathVariable("cviewids") String cviewIds, @PathVariable("cvgroupid") String groupId) {
+		
+		List<String> cviewList = StringUtils.toList(cviewIds);
+		categoryTreeService.addContentViewsToGroup(groupId, cviewList);
+	}
+
 	@RequestMapping(value = "/category-tree/cview/link/company/{unitid}/catalogid/{catalogid}/cviewids/{cviewids}", method = RequestMethod.PUT)
 	public void addCatalogToConentViews(@PathVariable("unitid") String unitId, @PathVariable("catalogid") String catalogId, @PathVariable("cviewids") String cviewids) {
 		

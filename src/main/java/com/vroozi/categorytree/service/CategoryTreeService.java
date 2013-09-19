@@ -27,6 +27,7 @@ public interface CategoryTreeService {
 	Collection<CategoryNode> getCategoryTree(String unitId, String contentViewGroupToken);
 	void addContentViewToGroups(String cviewId, List<String> cvgoupIds);
 	void removeContentViewFromGroups(String contentViewId, List<String> cvgoupIds);
+	void addContentViewsToGroup(String groupId, List<String> cviewList);
 	void addCatalogToConentViews(String unitId, String catalogId, List<String> contentViewIds);
 	void removeCatalogFromConentViews(String unitId, String catalogId, List<String> contentViewIds);
 	

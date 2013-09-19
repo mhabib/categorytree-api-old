@@ -140,6 +140,17 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 
 	@Override
 	@Transactional
+	public void addContentViewsToGroup(String groupId, List<String> cviewList) {
+		ContentViewGroup cvgroup = cvGroupRepository.findByContentViewGroupId(groupId);
+		for (String cviewId : cviewList) {
+			ContentView contentView = cvRepository.findByContentViewId(cviewId);
+			cvgroup.getContentViews().add(contentView);
+		}
+		cvGroupRepository.save(cvgroup);
+	}
+	
+	@Override
+	@Transactional
 	public void addCatalogToConentViews(String unitId, String catalogId,
 			List<String> contentViewIds) {
 
