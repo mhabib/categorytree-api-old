@@ -39,4 +39,7 @@ public class RestServiceUrl {
 	public String getProfilesByCatalogIdsURI() {
 		return appConfig.profilesByCatalogIdsURI;
 	}
+	public String getProfilesByProfileIdsPath() {
+		return appConfig.profilesByProfileIdsPath;
+	}
 }

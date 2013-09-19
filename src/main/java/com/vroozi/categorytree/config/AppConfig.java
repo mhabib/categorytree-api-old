@@ -28,6 +28,9 @@ public class AppConfig {
     @Value("${profilesByCatalogIdsURI}")
 	public String profilesByCatalogIdsURI;
 
+    @Value("${profilesByProfileIdsPath}")
+	public String profilesByProfileIdsPath;
+
     @Bean
     public static PropertyPlaceholderConfigurer properties() {
         PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();
