@@ -28,6 +28,8 @@ public interface CategoryTreeService {
 	void addContentViewToGroups(String cviewId, List<String> cvgoupIds);
 	void removeContentViewFromGroups(String contentViewId, List<String> cvgoupIds);
 	void addContentViewsToGroup(String groupId, List<String> cviewList);
+	void addCatalogsToConentView(String unitId, String contentViewId,
+			List<String> catalogIds);
 	void addCatalogToConentViews(String unitId, String catalogId, List<String> contentViewIds);
 	void removeCatalogFromConentViews(String unitId, String catalogId, List<String> contentViewIds);
 	

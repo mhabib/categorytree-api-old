@@ -179,6 +179,19 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	
 	@Override
 	@Transactional
+	public void addCatalogsToConentView(String unitId, String contentViewId,
+			List<String> catalogIds) {
+		Map<String, Integer> matGroups = catalogService.getMatGroupsByCatalogIds(catalogIds);
+		if(matGroups!=null && matGroups.size()>0) {
+			ContentView contentView = getContentView(contentViewId);
+			if(contentView != null) {
+				linkContentViewCategories(unitId, contentView, matGroups);
+			}
+		}
+	}
+	
+	@Override
+	@Transactional
 	public void addCatalogToConentViews(String unitId, String catalogId,
 			List<String> contentViewIds) {
 

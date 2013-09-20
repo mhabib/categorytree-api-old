@@ -98,6 +98,13 @@ public class CategoryTreeController {
 		categoryTreeService.addContentViewsToGroup(groupId, cviewList);
 	}
 
+	@RequestMapping(value = "/category-tree/cview/link/company/{unitid}/cviewid/{cviewid}/catalogids/{catalogids}", method = RequestMethod.PUT)
+	public void addCatalogsToConentView(@PathVariable("unitid") String unitId, @PathVariable("cviewid") String cviewid, @PathVariable("catalogids") String catalogids) {
+		
+		List<String> catalogList = StringUtils.toList(catalogids);
+		categoryTreeService.addCatalogsToConentView(unitId, cviewid, catalogList);
+	}
+
 	@RequestMapping(value = "/category-tree/cview/link/company/{unitid}/catalogid/{catalogid}/cviewids/{cviewids}", method = RequestMethod.PUT)
 	public void addCatalogToConentViews(@PathVariable("unitid") String unitId, @PathVariable("catalogid") String catalogId, @PathVariable("cviewids") String cviewids) {
 		
