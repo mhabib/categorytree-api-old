@@ -3,6 +3,7 @@
  */
 package com.vroozi.categorytree.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.neo4j.annotation.GraphId;
@@ -25,10 +26,15 @@ public class ContentViewGroup {
 	String unitId;
 	@Indexed
 	String token;
+	String groupType;
 	Boolean active;
 	
 	@RelatedTo(type = "ASSOCIATED")
     Set<ContentView> contentViews;
+	
+	public ContentViewGroup() {
+		contentViews = new HashSet<ContentView>();
+	}
 	
 	public Long getId() {
 		return id;
@@ -65,6 +71,12 @@ public class ContentViewGroup {
 	}
 	public void setContentViews(Set<ContentView> contentViews) {
 		this.contentViews = contentViews;
+	}
+	public String getGroupType() {
+		return groupType;
+	}
+	public void setGroupType(String groupType) {
+		this.groupType = groupType;
 	}
 	public Boolean getActive() {
 		return active;

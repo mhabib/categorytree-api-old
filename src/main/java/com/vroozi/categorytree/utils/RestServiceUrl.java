@@ -42,4 +42,11 @@ public class RestServiceUrl {
 	public String getProfilesByProfileIdsPath() {
 		return appConfig.profilesByProfileIdsPath;
 	}
+	public String getMasterProfilePath() {
+		return appConfig.masterProfilePath;
+	}
+	public String getProfilesGroupsByIds() {
+		return appConfig.profileGroupsByIdsPath;
+	}
+
 }

@@ -31,6 +31,12 @@ public class AppConfig {
     @Value("${profilesByProfileIdsPath}")
 	public String profilesByProfileIdsPath;
 
+    @Value("${masterProfilePath}")
+	public String masterProfilePath;
+
+    @Value("${profileGroupsByIdsPath}")
+	public String profileGroupsByIdsPath;
+    
     @Bean
     public static PropertyPlaceholderConfigurer properties() {
         PropertyPlaceholderConfigurer ppc = new PropertyPlaceholderConfigurer();

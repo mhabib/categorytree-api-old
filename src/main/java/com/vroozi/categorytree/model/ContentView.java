@@ -24,6 +24,7 @@ public class ContentView {
 	@Indexed(unique = true)
 	String contentViewId;
 	String name;
+	String unitId;
 	Boolean active;
 	@RelatedToVia(type = "MAPS_WITH")
 	Set<CategoryMapping> categoryMappings = new HashSet<CategoryMapping>();
@@ -51,6 +52,12 @@ public class ContentView {
 	}
 	public void setActive(Boolean active) {
 		this.active = active;
+	}
+	public String getUnitId() {
+		return unitId;
+	}
+	public void setUnitId(String unitId) {
+		this.unitId = unitId;
 	}
 	public Set<CategoryMapping> getCategoryMappings() {
 		return categoryMappings;

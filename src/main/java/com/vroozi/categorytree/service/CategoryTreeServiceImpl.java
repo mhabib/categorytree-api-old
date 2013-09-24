@@ -20,6 +20,7 @@ import com.vroozi.categorytree.model.Category;
 import com.vroozi.categorytree.model.CategoryNode;
 import com.vroozi.categorytree.model.ContentView;
 import com.vroozi.categorytree.model.ContentViewGroup;
+import com.vroozi.categorytree.model.ProfileGroup;
 import com.vroozi.categorytree.model.ProfileProxy;
 import com.vroozi.categorytree.processing.CategoryTreeProcess;
 import com.vroozi.categorytree.repository.CategoryRepository;
@@ -75,7 +76,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	@Override
 	public void updateProfileGroups(List<String> groupIds, Boolean active) {
 		for (String groupId : groupIds) {
-			ContentViewGroup cvgroup = cvGroupRepository.findByContentViewGroupId(groupId);
+			ContentViewGroup cvgroup = getContentViewGroup(groupId);
 			cvgroup.setActive(active);
 			cvGroupRepository.save(cvgroup);
 		}
@@ -91,18 +92,47 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	}
 
 	@Override
-	public void addUpdateContentView(String contentViewId, String name, Boolean active) {
+	@Transactional
+	public void addUpdateContentView(String contentViewId, String name, Boolean active, String unitId) {
 		ContentView contentView = cvRepository.findByContentViewId(contentViewId);
 		if(contentView==null) {
 			contentView = new ContentView();
 			contentView.setContentViewId(contentViewId);
+			contentView.setName(name);
+			contentView.setUnitId(unitId);
+			contentView.setActive(active);
+			contentView = cvRepository.save(contentView);
+			associateMasterGroup(contentView);
+		} else {
+			contentView.setName(name);
+			contentView.setUnitId(unitId);
+			contentView.setActive(active);
+			contentView = cvRepository.save(contentView);
 		}
-		contentView.setName(name);
-		contentView.setActive(active);
-		contentView = cvRepository.save(contentView);
 	}
 	
+	private void associateMasterGroup(ContentView contentView) {
+		Iterable<ContentViewGroup> cvGroups = cvGroupRepository.findFromUnitIdAndGroupType(contentView.getUnitId(), "MASTER_ADMIN");
+		ContentViewGroup cvGroup;
+		if(cvGroups.iterator().hasNext()) {
+			cvGroup = cvGroups.iterator().next();
+		} else {
+			ProfileGroup profileGroup = contentViewRestClient.getMasterConentViewGroup(contentView.getUnitId());
+			cvGroup = new ContentViewGroup();
+			cvGroup.setContentViewGroupId(""+profileGroup.getGroupId());
+			cvGroup.setName(profileGroup.getGroupName());
+			cvGroup.setActive(profileGroup.isActive());
+			cvGroup.setGroupType(profileGroup.getGroupType().toString());
+			cvGroup.setToken(profileGroup.getToken());
+			cvGroup.setUnitId(profileGroup.getUnitId());
+		}
+		cvGroup.getContentViews().add(contentView);
+		cvGroupRepository.save(cvGroup);
+		
+	}
+
 	@Override
+	@Transactional
 	public void updateContentViews(List<String> contentViewIds, Boolean active) {
 		for (String contentViewId : contentViewIds) {
 			ContentView contentView = getContentView(contentViewId);
@@ -112,6 +142,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 			}
 		}
 	}
+	
 	@Override
 	public void removeContentViews(List<String> cviewIds) {
 		for (String cviewId : cviewIds) {
@@ -126,7 +157,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 		ContentView contentView = getContentView(contentViewId);
 		if(contentView != null) {
 			for (String groupId : groupIds) {
-				ContentViewGroup cvgroup = cvGroupRepository.findByContentViewGroupId(groupId);
+				ContentViewGroup cvgroup = getContentViewGroup(groupId);
 				cvgroup.getContentViews().add(contentView);
 				cvGroupRepository.save(cvgroup);
 			}
@@ -150,7 +181,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	@Override
 	@Transactional
 	public void addContentViewsToGroup(String groupId, List<String> cviewList) {
-		ContentViewGroup cvgroup = cvGroupRepository.findByContentViewGroupId(groupId);
+		ContentViewGroup cvgroup = getContentViewGroup(groupId);
 		for (String cviewId : cviewList) {
 			ContentView contentView = getContentView(cviewId);
 			if(contentView!=null) {
@@ -160,18 +191,40 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 		cvGroupRepository.save(cvgroup);
 	}
 
+	public ContentViewGroup getContentViewGroup(String contentViewGroupId) {
+		ContentViewGroup cvGroup = cvGroupRepository.findByContentViewGroupId(contentViewGroupId);
+		if(cvGroup == null) {
+			List<String> contentViewGroupIds =new ArrayList<String>(1);
+			contentViewGroupIds.add(contentViewGroupId);
+			List<ProfileGroup> contentViewGroups = contentViewRestClient.getContentViewGroupsByIds(contentViewGroupIds);
+			if(contentViewGroups!=null && contentViewGroups.size()>0) {
+				cvGroup = new ContentViewGroup();
+				cvGroup.setActive(contentViewGroups.get(0).isActive());
+				cvGroup.setContentViewGroupId(""+contentViewGroups.get(0).getGroupId());
+				cvGroup.setName(contentViewGroups.get(0).getGroupName());
+				cvGroup.setUnitId(contentViewGroups.get(0).getUnitId());
+				cvGroup.setGroupType(contentViewGroups.get(0).getGroupType().toString());
+				cvGroup.setToken(contentViewGroups.get(0).getToken());
+				cvGroupRepository.save(cvGroup);
+			}
+		}
+		return cvGroup;
+	}
+
 	public ContentView getContentView(String cviewId) {
 		ContentView contentView = cvRepository.findByContentViewId(cviewId);
 		if(contentView == null) {
 			List<String> contentViewIds = new ArrayList<String>(1);
 			contentViewIds.add(cviewId);
-			List<ProfileProxy> contentViews = contentViewRestClient.getContentViewIdsByCatalogIds(contentViewIds);
+			List<ProfileProxy> contentViews = contentViewRestClient.getContentViewsByIds(contentViewIds);
 			if(contentViews!=null && contentViews.size()>0) {
 				contentView = new ContentView();
 				contentView.setActive(contentViews.get(0).isActive());
 				contentView.setContentViewId(""+contentViews.get(0).getProfileId());
 				contentView.setName(contentViews.get(0).getProfileName());
+				contentView.setUnitId(contentViews.get(0).getUnitId());
 				cvRepository.save(contentView);
+				associateMasterGroup(contentView);
 			}
 		}
 		return contentView;
@@ -238,7 +291,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 			contentView = cvRepository.save(contentView);
 		}
 		
-		ContentViewGroup cvGroup = cvGroupRepository.findByContentViewGroupId(contentViewGroupId);
+		ContentViewGroup cvGroup = getContentViewGroup(contentViewGroupId);
 		if(cvGroup != null) {
 			cvGroup.getContentViews().add(contentView);
 			cvGroupRepository.save(cvGroup);

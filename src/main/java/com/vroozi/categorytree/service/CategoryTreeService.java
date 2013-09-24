@@ -17,7 +17,7 @@ public interface CategoryTreeService {
 	void addUpdateContentViewGroup(String id, String unitId, String name, String token, Boolean active);
 	void updateProfileGroups(List<String> groupIds, Boolean active);
 	void deleteContentViewGroup(List<String> goupIds);
-	void addUpdateContentView(String contentViewId, String name, Boolean active);
+	void addUpdateContentView(String contentViewId, String name, Boolean active, String unitId);
 	void updateContentViews(List<String> contentViewIds, Boolean active);
 	void addContentView(String unitId, String contentViewGroupId, String contentViewId, String contenViewName, List<String> catalogIds);
 	void removeContentViews(List<String> cviewIds);

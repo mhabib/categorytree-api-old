@@ -50,10 +50,10 @@ public class CategoryTreeController {
 		categoryTreeService.deleteContentViewGroup(groupIdList);
 	}
 
-	@RequestMapping(value = "/category-tree/cview/cviewid/{cviewid}/cvname/{cvname}/status/{status}", method = RequestMethod.POST)
+	@RequestMapping(value = "/category-tree/cview/cviewid/{cviewid}/cvname/{cvname}/status/{status}/unitid/{unitid}", method = RequestMethod.POST)
 	void addUpdateContentView(@PathVariable("cviewid") String contentViewId, @PathVariable("cvname") String cvname,
-			@PathVariable("status") Boolean active) {
-		categoryTreeService.addUpdateContentView(contentViewId, cvname, active);
+			@PathVariable("status") Boolean active, @PathVariable("unitid") String unitId) {
+		categoryTreeService.addUpdateContentView(contentViewId, cvname, active, unitId);
 	}
 	
 	@RequestMapping(value = "/category-tree/cview/cviewids/{cviewids}/status/{status}", method = RequestMethod.PUT)
