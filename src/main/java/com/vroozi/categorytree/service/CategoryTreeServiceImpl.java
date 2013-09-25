@@ -325,8 +325,8 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	
 	@Override
 	@Transactional
-	public void addCatalog(String unitId, List<String> catalogIds, Map<String, Integer> matGroups) {
-		List<String> contentViewIds = catalogService.getContentViewIdsByCatalogIds(unitId, catalogIds); 
+	public void addCatalog(String unitId, String catalogId, Map<String, Integer> matGroups) {
+		List<String> contentViewIds = catalogService.getContentViewIdsByCatalogId(unitId, catalogId); 
 		EndResult<Category> categories = categoryRepository.findAllByPropertyValue("unitId", unitId);
 		for (Category category : categories) {
 			if(mapCategory(category, matGroups)) {
@@ -344,9 +344,7 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	@Override
 	@Transactional
 	public void deleteCatalog(String unitId, String catalogId, Map<String, Integer> oldMatGroups) {
-		List<String> catalogIds = new ArrayList<String>(1);
-		catalogIds.add(catalogId);
-		List<String> contentViewIds = catalogService.getContentViewIdsByCatalogIds(unitId, catalogIds);
+		List<String> contentViewIds = catalogService.getContentViewIdsByCatalogId(unitId, catalogId);
 		
 		List<ContentView> contentViews = new ArrayList<ContentView>(contentViewIds.size());
 		for (String contentViewId : contentViewIds) {
@@ -379,8 +377,13 @@ public class CategoryTreeServiceImpl implements CategoryTreeService {
 	public void updateCategoriesPath(String unitId) {
 		List<String> catalogIds = catalogService.getLiveCatalogIds(unitId);
 		if(catalogIds!=null && catalogIds.size()>0) {
-			Map<String, Integer> catalogMatGroups = catalogService.getMatGroupsByCatalogIds(catalogIds);
-			addCatalog(unitId, catalogIds, catalogMatGroups);
+			for (String catalogId : catalogIds) {
+				List<String> catalogIdList = new ArrayList<String>(1);
+				catalogIdList.add(catalogId);
+				Map<String, Integer> catalogMatGroups = catalogService.getMatGroupsByCatalogIds(catalogIdList);
+				addCatalog(unitId, catalogId, catalogMatGroups);
+			}
+			
 		}
 	}
 

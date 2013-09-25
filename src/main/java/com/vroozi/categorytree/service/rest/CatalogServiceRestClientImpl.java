@@ -65,11 +65,9 @@ public class CatalogServiceRestClientImpl implements CatalogService {
 	}
 
 	@Override
-	public List<String> getContentViewIdsByCatalogIds(String unitId,
-			List<String> catalogIds) {
+	public List<String> getContentViewIdsByCatalogId(String unitId, String catalogId) {
 		try {
-        	String catalogIdStr = StringUtils.join(catalogIds, ',');
-        	String[] cviewArray =  new RestTemplate().getForObject(restServiceUrl.getProfilesByCatalogIdsURI(), String[].class, unitId, catalogIdStr);
+        	String[] cviewArray =  new RestTemplate().getForObject(restServiceUrl.getProfilesByCatalogIdsURI(), String[].class, unitId, catalogId);
         	List<String> contentViewIds = Arrays.asList(cviewArray);
         	return contentViewIds;
         } catch(RestClientException rse) {

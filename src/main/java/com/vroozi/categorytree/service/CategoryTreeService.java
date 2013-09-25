@@ -21,7 +21,7 @@ public interface CategoryTreeService {
 	void updateContentViews(List<String> contentViewIds, Boolean active);
 	void addContentView(String unitId, String contentViewGroupId, String contentViewId, String contenViewName, List<String> catalogIds);
 	void removeContentViews(List<String> cviewIds);
-	void addCatalog(String unitId, List<String> catalogIds, Map<String, Integer> matGroups);
+	void addCatalog(String unitId, String catalogId, Map<String, Integer> matGroups);
 	void deleteCatalog(String unitId, String catalogId, Map<String, Integer> oldMatGroups);
 	void uploadCategories(String unitId, String baseFile);
 	Collection<CategoryNode> getCategoryTree(String unitId, String contentViewGroupToken);

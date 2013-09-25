@@ -121,8 +121,7 @@ public class CategoryTreeController {
 
 	@RequestMapping(value = "/category-tree/catalog/company/{unitid}/catalogids/{catalogids}", method = RequestMethod.POST, consumes = "application/json")
 	public void addCatalog(@PathVariable("unitid")String unitId, @PathVariable("catalogids") String catalogIds, @RequestBody Map<String, Integer> catalogMatGroups) {
-		List<String> catalogIdList = StringUtils.toList(catalogIds);
-		categoryTreeService.addCatalog(unitId, catalogIdList, catalogMatGroups);
+		categoryTreeService.addCatalog(unitId, catalogIds, catalogMatGroups);
 	}
 
 //	@RequestMapping(value = "/category-tree/catalog/company/{unitid}", method = RequestMethod.PUT)
